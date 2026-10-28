@@ -23,7 +23,7 @@ const ATE = Number(process.argv[2]) || 5;
 const escrever = (texto) => process.stdout.write(texto + '\n');
 const logOriginal = console.log;
 const silenciar = () => { console.log = () => {}; };
-const devolverLog = () => { console.log = logOriginal; };
+const devolverLog = () => {}; // o console do app fica mudo até o fim: só o verificador escreve
 
 let sql;
 try {
@@ -272,7 +272,7 @@ const titulo = (texto) => `?titulo=${encodeURIComponent(texto)}`;
                 'o tratador de erros (app.use com 4 parâmetros) responde 500 com { erro }.');
         }
     } finally {
-        devolverLog();
+        console.log = logOriginal;
         await rodarScript(`IF DB_ID('${nomeBanco}') IS NOT NULL BEGIN
             ALTER DATABASE [${nomeBanco}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
             DROP DATABASE [${nomeBanco}];
@@ -291,7 +291,7 @@ const titulo = (texto) => `?titulo=${encodeURIComponent(texto)}`;
     }
     process.exit(tudoCerto ? 0 : 1);
 })().catch((erro) => {
-    devolverLog();
+    console.log = logOriginal;
     escrever(`ERRO no verificador: ${erro.message}`);
     process.exit(1);
 });
